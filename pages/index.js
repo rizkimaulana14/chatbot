@@ -10,10 +10,7 @@ export default function Home() {
 
         if (msg.value) {
             // getting data
-            let url =
-                'https://cors-anywhere.herokuapp.com/https://simsimi.info/api/?text=' +
-                msg.value +
-                '&lc=id';
+            let url = 'https://api.akuari.my.id/simi/simi2?query=' + msg.value;
 
             // post message
             let selfMsg = document.createElement('p');
@@ -26,8 +23,14 @@ export default function Home() {
             profImgSimi.style.width = '30px';
             profImgSimi.style.height = '30px';
             profImgSimi.style.borderRadius = '100%';
-            profImgSimi.src =
-                'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg';
+            let urlPhoto = '';
+            if (localStorage.getItem('botPhoto')) {
+                urlPhoto = localStorage.getItem('botPhoto');
+            } else {
+                urlPhoto =
+                    'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg';
+            }
+            profImgSimi.src = urlPhoto;
             msgList.appendChild(profImgSimi);
 
             let profSimi = document.createElement('span');
@@ -51,7 +54,7 @@ export default function Home() {
                 simiMsg.style.marginTop = '0.25rem';
                 simiMsg.style.lineHeight = '1.2';
                 simiMsg.style.maxWidth = '70%';
-                simiMsg.textContent = res.data.success;
+                simiMsg.textContent = res.data.respon;
                 msgList.removeChild(simiTyping);
                 msgList.appendChild(simiMsg);
             });
@@ -64,16 +67,32 @@ export default function Home() {
         e.preventDefault();
 
         const login = document.querySelector('#login');
+        const headName = document.querySelector('#namee');
+        const headPhoto = document.querySelector('#photoo');
         const mainCard = document.querySelector('#main-card');
 
         const bName = document.querySelector('#nameBot').value;
+        const bPhoto = document.querySelector('#photoBot').value;
 
         if (bName) {
             localStorage.setItem('botName', bName);
+            localStorage.setItem('botPhoto', bPhoto);
 
             login.style.display = 'none';
             mainCard.style.display = 'flex';
         }
+
+        headName.textContent = ' ' + localStorage.getItem('botName');
+
+        let urlFoto = '';
+        if (localStorage.getItem('botPhoto')) {
+            urlFoto = localStorage.getItem('botPhoto');
+        } else {
+            urlFoto =
+                'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg';
+        }
+
+        headPhoto.src = urlFoto;
     };
 
     return (
@@ -86,6 +105,15 @@ export default function Home() {
                         id="nameBot"
                         name="nameBot"
                         className="form-control mb-2"
+                        placeholder="Ayang"
+                    ></input>
+                    <label>Photo BOT</label>
+                    <input
+                        type="text"
+                        id="photoBot"
+                        name="photoBot"
+                        className="form-control mb-2"
+                        placeholder="Enter url photo"
                     ></input>
                     <div className="text-center">
                         <button
@@ -100,8 +128,16 @@ export default function Home() {
 
                 <div id="main-card" className="card border-0">
                     <div className="card-header d-flex justify-content-between">
-                        <div className="fw-bold">BOT Chat</div>
-                        <span className="text-sm">Version 1.0</span>
+                        <div className="fw-bold">
+                            <img
+                                id="photoo"
+                                width="30px"
+                                height="30px"
+                                className="rounded-circle"
+                            ></img>
+                            <span id="namee"></span>
+                        </div>
+                        <span className="text-success">Online</span>
                     </div>
                     <div id="cardList" className="card-body overflow-scroll">
                         <div id="msgList"></div>
