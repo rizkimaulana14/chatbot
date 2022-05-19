@@ -10,7 +10,7 @@ export default function Home() {
 
         if (msg.value) {
             // getting data
-            let url = 'https://api.akuari.my.id/simi/simi2?query=' + msg.value;
+            let url = 'api/simi?msg=' + msg.value;
 
             // post message
             let selfMsg = document.createElement('p');
@@ -54,7 +54,7 @@ export default function Home() {
                 simiMsg.style.marginTop = '0.25rem';
                 simiMsg.style.lineHeight = '1.2';
                 simiMsg.style.maxWidth = '70%';
-                simiMsg.textContent = res.data.respon;
+                simiMsg.textContent = res.data.pesan;
                 msgList.removeChild(simiTyping);
                 msgList.appendChild(simiMsg);
             });
