@@ -1,16 +1,35 @@
 import axios from 'axios';
+import { useEffect } from 'react';
 
 export default function Home() {
+    useEffect(() => {
+        const botName = localStorage.getItem('botName');
+
+        if (botName) {
+            const login = document.querySelector('#login');
+            const mainCard = document.querySelector('#main-card');
+            const headPhoto = document.querySelector('#photoo');
+            const headName = document.querySelector('#namee');
+
+            headName.textContent = ' ' + localStorage.getItem('botName');
+            headPhoto.src = localStorage.getItem('botPhoto');
+
+            login.style.display = 'none';
+            mainCard.style.display = 'flex';
+        }
+    });
+
     const sended = (e) => {
         e.preventDefault();
 
         // deklarasi variabel
         const msg = document.querySelector('#msg');
         const msgList = document.querySelector('#msgList');
+        const cardList = document.querySelector('#cardList');
 
         if (msg.value) {
             // getting data
-            let url = 'api/simi?msg=' + msg.value;
+            let url = 'api/app?msg=' + msg.value;
 
             // post message
             let selfMsg = document.createElement('p');
@@ -23,13 +42,7 @@ export default function Home() {
             profImgSimi.style.width = '30px';
             profImgSimi.style.height = '30px';
             profImgSimi.style.borderRadius = '100%';
-            let urlPhoto = '';
-            if (localStorage.getItem('botPhoto')) {
-                urlPhoto = localStorage.getItem('botPhoto');
-            } else {
-                urlPhoto =
-                    'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg';
-            }
+            let urlPhoto = localStorage.getItem('botPhoto');
             profImgSimi.src = urlPhoto;
             msgList.appendChild(profImgSimi);
 
@@ -48,27 +61,36 @@ export default function Home() {
 
             axios.get(url).then(function (res) {
                 // response simi
-
-                let simiMsg = document.createElement('p');
-                simiMsg.style.textAlign = 'left';
-                simiMsg.style.marginTop = '0.25rem';
-                simiMsg.style.lineHeight = '1.2';
-                simiMsg.style.maxWidth = '70%';
-                simiMsg.textContent = res.data.pesan;
-                msgList.removeChild(simiTyping);
-                msgList.appendChild(simiMsg);
+                if (res.data.photo) {
+                    let pap = document.createElement('img');
+                    pap.src = localStorage.getItem('botPhoto');
+                    pap.style.display = 'block';
+                    pap.style.borderRadius = '0.25rem';
+                    pap.style.marginTop = '0.50rem';
+                    pap.style.width = '50%';
+                    msgList.removeChild(simiTyping);
+                    msgList.appendChild(pap);
+                } else {
+                    let simiMsg = document.createElement('p');
+                    simiMsg.style.textAlign = 'left';
+                    simiMsg.style.marginTop = '0.25rem';
+                    simiMsg.style.lineHeight = '1.2';
+                    simiMsg.style.maxWidth = '70%';
+                    simiMsg.textContent = res.data.ayang;
+                    msgList.removeChild(simiTyping);
+                    msgList.appendChild(simiMsg);
+                }
             });
         } else {
-            alert('Warning, Pesan tidak boleh kosong!');
+            alert('Pesan tidak boleh kosong!');
         }
+        cardList.scrollTop = cardList.scrollHeight;
     };
 
     const saveSettings = (e) => {
         e.preventDefault();
 
         const login = document.querySelector('#login');
-        const headName = document.querySelector('#namee');
-        const headPhoto = document.querySelector('#photoo');
         const mainCard = document.querySelector('#main-card');
 
         const bName = document.querySelector('#nameBot').value;
@@ -76,23 +98,39 @@ export default function Home() {
 
         if (bName) {
             localStorage.setItem('botName', bName);
-            localStorage.setItem('botPhoto', bPhoto);
+            if (bPhoto) {
+                localStorage.setItem('botPhoto', bPhoto);
+            } else {
+                localStorage.setItem(
+                    'botPhoto',
+                    'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg',
+                );
+            }
 
             login.style.display = 'none';
             mainCard.style.display = 'flex';
+
+            const headPhoto = document.querySelector('#photoo');
+            const headName = document.querySelector('#namee');
+
+            headName.textContent = ' ' + localStorage.getItem('botName');
+            let urlFoto = '';
+            if (localStorage.getItem('botPhoto')) {
+                urlFoto = localStorage.getItem('botPhoto');
+            } else {
+                urlFoto =
+                    'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg';
+            }
+
+            headPhoto.src = urlFoto;
         }
+    };
 
-        headName.textContent = ' ' + localStorage.getItem('botName');
+    const logout = () => {
+        localStorage.removeItem('botName');
+        localStorage.removeItem('botPhoto');
 
-        let urlFoto = '';
-        if (localStorage.getItem('botPhoto')) {
-            urlFoto = localStorage.getItem('botPhoto');
-        } else {
-            urlFoto =
-                'https://i.pinimg.com/736x/63/d2/86/63d2865f4f8f1c5784f56aeae88cbf6f.jpg';
-        }
-
-        headPhoto.src = urlFoto;
+        location.reload();
     };
 
     return (
@@ -137,7 +175,12 @@ export default function Home() {
                             ></img>
                             <span id="namee"></span>
                         </div>
-                        <span className="text-success">Online</span>
+                        <button
+                            className="btn btn-sm fw-bold btn-danger"
+                            onClick={logout}
+                        >
+                            UDAHAN
+                        </button>
                     </div>
                     <div id="cardList" className="card-body overflow-scroll">
                         <div id="msgList"></div>
