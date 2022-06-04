@@ -25,8 +25,10 @@ export default function handler(req, res) {
             if (query == 'pap ayang' || query == 'pap' || query == 'pap dong') {
                 pap = 'found';
             }
+        
+            let creator = "Rizki Maulana";
 
-            res.status(200).json({ ayang: data, photo: pap });
+            res.status(200).json({ ayang: data, photo: pap, moderator: creator });
         })
         .catch(function (e) {
             console.log(e);
